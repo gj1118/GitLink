@@ -7,7 +7,7 @@ import subprocess
 
 REMOTE_CONFIG = {
     'github': {
-        'url': 'https://github.com/{0}/{1}/blob/{2}/{3}{4}',
+        'url': 'https://{5}/{0}/{1}/blob/{2}/{3}{4}',
         'line_param': '#L'
     },
     'bitbucket': {
@@ -48,6 +48,11 @@ class GitlinkCommand(sublime_plugin.TextCommand):
         p = re.compile(r"(.+: )*([\w\d\.]+)[:|@]/?/?(.*)")
         parts = p.findall(git_config_path)
         git_config = parts[0][2]
+
+        if(":" in git_config) :
+            remoteSite = git_config.split(":")[0]
+        else:
+            remoteSite = "github.com"
 
         remote_name = 'github'
         if 'bitbucket' in git_config:
@@ -92,7 +97,7 @@ class GitlinkCommand(sublime_plugin.TextCommand):
         if remote_name == 'codebasehq':
             url = remote['url'].format(user, project, repo, git_rev, remote_path, filename)
         else:
-            url = remote['url'].format(user, repo, git_rev, remote_path, filename)
+            url = remote['url'].format(user, repo, git_rev, remote_path, filename, remoteSite)
 
         if(args['line']):
             region = self.view.sel()[0]
